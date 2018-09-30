@@ -20,13 +20,16 @@ class Book(db.Model):
 
 
 	def as_dict(self):
-		return {col.name: getattr(self, col.name) for col in self.__table__.columns}
+		return {col.name: getattr(self, col.name) for col in self.__table__.columns}	
 
 
 class Author(db.Model):
 	id = Column(Integer, primary_key=True)
 	name = Column(String(255), nullable=False) 
 	books = relationship('Book')
+
+	def as_dict(self):
+		return {col.name: getattr(self, col.name) for col in self.__table__.columns}
 
 class User(db.Model):
 	id = Column(Integer, primary_key=True)

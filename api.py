@@ -10,14 +10,10 @@ api = Api(app)
 def resource_not_found():
 	abort(404, message="Requested resource does not exist")
 
-class BookList(Resource):
+class Book(Resource):
 
 	def books(self):
 		return models.Book.query.all()
-
-	def get(self):
-		return map(lambda l: l.as_dict(), self.books())
-
 
 	def post(self):
 		if not request.json or 'title' not in request.json:
@@ -32,9 +28,17 @@ class BookList(Resource):
 
 		return book.as_dict(), 201
 
-class Book(Resource):
+	def get(self, book_id=None, querystr=''):
 
-	def get(self, book_id):
+		if 'isbn10' in request.args.keys():
+			return self.get_isbn(isbn10=request.args['isbn10'])
+
+		if 'isbn13' in request.args.keys():
+			return self.get_isbn(isbn13=request.args['isbn13'])
+
+		if book_id is None:
+			return map(lambda l: l.as_dict(), self.books())
+
 		book = models.Book.query.filter(models.Book.id==book_id).first();
 		if book is None:
 			resource_not_found()
@@ -42,10 +46,36 @@ class Book(Resource):
 		return book.as_dict()
 
 
+	def get_isbn(self, isbn10=None, isbn13=None):
+		bookquery = models.Book.query
+		book = None
+		if isbn10 is not None:
+			book = bookquery.filter(models.Book.isbn10==isbn10).first()
+
+		if book is None and isbn13 is not None:
+			book = bookquery.filter(models.Book.isbn13==isbn13).first()
+
+		if book is None: resource_not_found()
+
+		return book.as_dict()
+
+class Author(Resource):
+	def get(self, author_id=None):
+		#Return list of authors if no ID is specified
+		if author_id is None:
+			return map(lambda l: l.as_dict(), models.Author.query.all())
+
+		author = models.Author.query.filter(models.Author.id==author_id).first()
+		
+		if author is None:
+			resource_not_found()
+		
+		return author.as_dict()
 
 
-api.add_resource(BookList, '/books/')
-api.add_resource(Book, '/books/<int:book_id>')
+
+api.add_resource(Book, '/books/', '/books/<int:book_id>')
+api.add_resource(Author, '/authors/', '/authors/<int:author_id>')
 
 # @app.route('/')
 # def hello():
