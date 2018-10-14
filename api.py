@@ -1,32 +1,60 @@
-from flask import Flask, request
+from flask import g, Flask, request, jsonify
 from flask_restful import Resource, Api, reqparse, abort
+from flask_httpauth import HTTPBasicAuth
+
 import models
 import database
 
 app = Flask(__name__)
 api = Api(app)
 
+auth = HTTPBasicAuth()
+
+# Verifies the password or token from a user. Returns True if user is authorized. used by HTTPAuh package
+@auth.verify_password
+def verify_password(user_token, pw):
+
+	user = models.User.verify_token(user_token)
+	if user is None:
+		user = models.User.query.filter_by(name = user_token).first()
+		if not user or not user.verify_password(pw):
+			return False
+
+	#Set user in global object
+	g.user = user
+	return True
+
 
 def resource_not_found():
 	abort(404, message="Requested resource does not exist")
 
-class Book(Resource):
 
-	def books(self):
-		return models.Book.query.all()
+class Library(Resource):
 
+	# create a new book and automatically add it to this users' library
+	@auth.login_required
 	def post(self):
 		if not request.json or 'title' not in request.json:
 			abort(400)
 
 		book = models.Book()
 		book.title = request.json['title']
-		book.description = request.json.get('description','')
+		book.parse(request.json)	#parse rest of parameters from the request
+
+		g.user.library.addbook(book)
 
 		database.db.session.add(book)
 		database.db.session.commit()
 
 		return book.as_dict(), 201
+
+	@auth.login_required
+	def get(self):
+		return map(lambda l: l.as_dict_verbose(), g.user.library.books())
+
+
+#Needs to be reviewed
+class BookDetail(Resource):
 
 	def get(self, book_id=None, querystr=''):
 
@@ -35,9 +63,6 @@ class Book(Resource):
 
 		if 'isbn13' in request.args.keys():
 			return self.get_isbn(isbn13=request.args['isbn13'])
-
-		if book_id is None:
-			return map(lambda l: l.as_dict(), self.books())
 
 		book = models.Book.query.filter(models.Book.id==book_id).first();
 		if book is None:
@@ -59,6 +84,8 @@ class Book(Resource):
 
 		return book.as_dict()
 
+
+
 class Author(Resource):
 	def get(self, author_id=None):
 		#Return list of authors if no ID is specified
@@ -73,17 +100,29 @@ class Author(Resource):
 		return author.as_dict()
 
 
+class Authentication(Resource):
+	@auth.login_required
+	def get(self):
+		return {'message' : 'Hello there!', 'name' : g.user.name }
 
-api.add_resource(Book, '/books/', '/books/<int:book_id>')
+# classic style routing
+@app.route('/auth/generate_token')
+@auth.login_required
+def get_auth_token():
+	print request.headers
+	print request.json
+	token = g.user.generate_token()
+	return jsonify({'token':token.decode('ascii')})
+
+
+api.add_resource(Authentication, '/auth/')
+api.add_resource(Library, '/library/')
 api.add_resource(Author, '/authors/', '/authors/<int:author_id>')
-
-# @app.route('/')
-# def hello():
-# 	return 'Hello world!'
 
 def configapp() :
 	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+	app.config['SECRET_KEY'] = "my name is philip de keulenaer and this is my secret"
 	database.db.init_app(app)
 	app.app_context().push()
 	database.db.create_all()
@@ -91,4 +130,4 @@ def configapp() :
 
 if __name__ == '__main__':
 	configapp()
-	app.run(debug=True)
+	app.run(host='0.0.0.0',debug=True)

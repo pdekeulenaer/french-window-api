@@ -18,4 +18,5 @@ def configapp() :
 	database.db.create_all()
 	
 if __name__ == '__main__':
+	configapp()
 	app.run()
