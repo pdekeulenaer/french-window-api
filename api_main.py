@@ -125,6 +125,6 @@ def build_api(app):
 	api.add_resource(Authentication, '/api/auth/')
 	api.add_resource(AuthenticationToken, '/api/auth/generate_token')
 	api.add_resource(Library, '/api/library/')
-	api.add_resource(Author, '/api/authors/', 'api/authors/<int:author_id>')
-	api.add_resource(BookDetail, '/api/books/', 'api/books/<int:book_id>')
+	api.add_resource(Author, '/api/authors/', '/api/authors/<int:author_id>')
+	api.add_resource(BookDetail, '/api/books/', '/api/books/<int:book_id>')
 
