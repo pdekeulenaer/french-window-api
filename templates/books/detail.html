@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block pagestyles %}
+    <!-- Specific Page Vendor CSS -->
+{% endblock %}
+
+{% block content %}
+
+              <div class="col-md-12 col-lg-12 col-xl-12">
+                <section class="panel panel-horizontal">
+                  <header class="panel-heading bg-white" style="width:1px">
+                    <div class="panel-heading mt-sm">
+                      <!-- <i class="fa fa-music"></i> -->
+                      <img src="{{ url_for('static', filename='img/' + book.image_path) }}"/>
+                    </div>
+                  </header>
+                  <div class="panel-body p-lg">
+                    <h3 class="text-semibold mt-sm">{{ book.title }}</h3>
+                    <p>{{ book.author.name }}</p>
+                    <p>{{ book.description }}</p>
+                  </div>
+                </section>
+              </div>
+
+<!--               <div class="col-md-12 col-lg-12 col-xl-6">
+                  <header class="panel-heading bg-white">
+                    <div class="panel-heading-icon bg-primary mt-sm">
+                      <img src="{{ url_for('static', filename='img/' + book.image_path) }}" />
+                    </div>
+                  </header>
+                  <div class="panel-body p-lg">
+                    <h3 class="text-semibold mt-sm">{{book.title}}</h3>
+                    <p>{{ book.author.name }}</p>
+                    <p>{{ book.description }} </p>
+                  </div>
+                </section>
+              </div>   -->    
+
+
+<!--               <section class="panel panel-horizontal">
+                  <header class="panel-heading bg-white">
+                    <div class="panel-heading-icon bg-primary mt-sm">
+                      <i class="fa fa-music"></i>
+                    </div>
+                  </header>
+                  <div class="panel-body p-lg">
+                    <h3 class="text-semibold mt-sm">Simple Block Title</h3>
+                    <p>Nullam quiris risus eget urna mollis ornare vel eu leo. Soccis natoque penatibus et magnis dis parturient montes.</p>
+                  </div>
+                </section>    -->   
+
+{% endblock %}
+
+{% block pagescripts %}
+<!-- Specific Page Vendor -->
+
+
+{% endblock %}

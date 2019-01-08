@@ -1,0 +1,51 @@
+Features to build
+-----------------
+
+MVP 1.0 tasks:
+- Update and synchronize scanning mechanism
+
+BUGS
+
+REFACTORING LIST
+- cleanup static assets
+- standardize authentication package for both API and web access
+- refactor code with clean controller
+- clean-up URL naming
+
+--------------------------------
+
+MVP 1.0 - Personal library 
+[ ] app to scan book
+[ ] upload into cloud based tool
+[X] view current collection of books online (DONE)
+[X] add & remove new books on web
+
+MVP 2.0 - Library with wishlist
+--> Scan new books and add to wishlist
+--> Manually add new books to wishlist
+--> look for new books by favored author
+--> view book details online
+
+
+MVP 3.0 - Dual screen experience
+--> Load library on web and mobile screens
+
+MVP 4.0 - Expansive repository
+--> rating & reviews of books
+--> book tagging
+--> series linkage
+--> author
+
+Other features - running list
+-----------------------------
+- autocomplete series
+- autocomplete author
+- autocomplete tagging
+- get release_date as part of 'add book' procedure
+- convert read toggle to AJAX (smoother UI)
+- convert forget toggle to AJAX (smoother UI)
+- Dynamic navbar using flask-nav package
+- Unforget feature
+- Remember me in login
+- Build out "book detail" page
+- Create functional "edit" form

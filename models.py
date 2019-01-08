@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Table, DateTime
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, Table, DateTime, Boolean
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 
 from flask import current_app as app
+
+from flask_login import UserMixin
 
 from database import db
 import datetime
@@ -13,15 +15,34 @@ class Book(db.Model):
 	id = Column(Integer, primary_key=True)
 	title = Column(String(255), nullable=False)
 
+	# primary information
 	description = Column(Text, nullable=True)
 	isbn13 = Column(String(255), nullable=True)
 	isbn10 = Column(String(255), nullable=True)
 	publisher = Column(String(255), nullable=True)
 
+	# secondary inputs
+	release_date = Column(DateTime, nullable=True)
+	pagecount = Column(Integer, nullable=True)
+	bindingtype = Column(String, nullable=True)
+	genre = Column(String(255), nullable=True)
+	image_path = Column(String(255), default='no_image_available.gif')
+
+
+	# links to other fields
 	author_id = Column(Integer, ForeignKey('author.id'))
 	author = relationship('Author')
 
+	series_id = Column(Integer, ForeignKey('series.id'), nullable=True)
+	series_nr = Column(Integer, default=0)
+	series = relationship('Series')
+
+	# includes user scoring
 	libraries = relationship('AssociationBookLibrary')
+
+	# link to genre tags
+	tags = relationship('AssociationBookTags', back_populates='book')
+
 
 	def as_dict(self):
 		return {col.name: getattr(self, col.name) for col in self.__table__.columns}	
@@ -37,20 +58,17 @@ class Book(db.Model):
 		self.isbn10 = d.get('isbn10')
 		self.description = d.get('description')
 		self.publisher = d.get('publisher')
-		self.parse_author(d.get('author', None))
 
-	def parse_author(self, d):
-		#check if an author exists
-		if d is None:
-			self.author = Author.unknown_author()
-			return	
 
-		if ('id' in d): 		author = Author.query.get(d['id'])
-		elif ('name' in d): 	author = Author.default(d['name'])
-		else: 					author = None
+	def __str__(self):
+		return self.title
 
-		if author is None: 		author = Author.unknown_author()
-		self.author = author
+
+class Series(db.Model):
+	id = Column(Integer, primary_key=True)
+	name = Column(String(255), nullable=False)
+	sequence = Column(Integer, default=0)
+	books = relationship('Book')
 
 
 class Author(db.Model):
@@ -86,7 +104,7 @@ class Author(db.Model):
 	def as_dict(self):
 		return {col.name: getattr(self, col.name) for col in self.__table__.columns}
 
-class User(db.Model):
+class User(db.Model, UserMixin):
 	id = Column(Integer, primary_key=True)
 	name = Column(String, nullable=False)
 	email = Column(String, nullable=False)
@@ -137,43 +155,59 @@ class Library(db.Model):
 
 	# Get all books in this library
 	def books(self):
-		return map(lambda l: l.book, self.associations)
+		booklist = []
+		for assoc in filter(lambda l: l.active, self.associations):
+			if assoc.active:
+				b = assoc.book
+				b.read = assoc.read
+				b.rating = assoc.rating
+				booklist.append(b)
+		return booklist
+		# return map(lambda l: l.book, self.associations)
 
-	# Add a book to the library - create association boject 
-	def addbook(self, book):
-		if (book not in self.books()):
-			assoc = AssociationBookLibrary(library=self)
-			assoc.book = book
 
 class AssociationBookLibrary(db.Model):
 	library_id = Column(Integer, ForeignKey('library.id'), primary_key=True)
 	book_id = Column(Integer, ForeignKey('book.id'), primary_key=True)
 	date_added = Column(DateTime, default=datetime.datetime.utcnow)
+
+	# specific user-provided data
+	rating = Column(Integer, nullable=True)
+	read = Column(Integer, default=0.0)
+
+	# active book?
+	active = Column(Boolean, default=True)
 	
+	# connections to others
 	library = relationship('Library', back_populates='associations')
 	book = relationship('Book')
 
+class AssociationBookTags(db.Model):
+	tag_id = Column(Integer, ForeignKey('tag.id'), primary_key=True)
+	book_id = Column(Integer, ForeignKey('book.id'), primary_key=True)
 
-def buildObjects(db):
-	a1 = Author(name='John Williams')
-	b1 = Book(title="Once upon a time", description="Great book")
-	b2 = Book(title="Second upon a time", description="Another classic")
-	u1 = User(name="Meghana", email="megmeg@meg.meg")
-	l = Library()
+	book = relationship('Book', back_populates='tags')
+	tag = relationship('Tag')
 
-	u1.set_password('admin')
+class Tag(db.Model):
+	id = Column(Integer, primary_key=True)
+	tag = Column(String(255), nullable=False)
 
-	b1.author = a1
-	b2.author = a1
+	@staticmethod
+	def search(label):
+		tag = Tag.query.filter_by(tag=label).first()
+		if tag is not None:
+			return tag
+		return None
 
-	l.user = u1
+	# Check if tag exists, if not create a new author
+	@staticmethod
+	def default(label):
+		tag = Tag.search(name)
+		if tag is None:
+			# Author is not known
+			tag = Tag(tag=label)
+			db.session.add(tag)
+			db.session.commit()
 
-	assoc = AssociationBookLibrary(library=l)
-	assoc.book = b2
-
-	db.session.add(a1)
-	db.session.add(b1)
-	db.session.add(b2)
-	db.session.add(u1)
-	db.session.add(l)
-	db.session.commit()
+		return tag
