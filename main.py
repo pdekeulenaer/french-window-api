@@ -129,6 +129,7 @@ def configapp() :
 	login_manager.login_view = 'login'
 	
 
+configapp()
+
 if __name__ == '__main__':
-	configapp()
 	app.run(debug=True)
