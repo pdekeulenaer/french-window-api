@@ -6,8 +6,8 @@ import models
 import database
 
 app = Flask(__name__)
-api = Api(app)
 
+api = Api(app)
 auth = HTTPBasicAuth()
 
 # Verifies the password or token from a user. Returns True if user is authorized. used by HTTPAuh package
@@ -115,19 +115,20 @@ def get_auth_token():
 	return jsonify({'token':token.decode('ascii')})
 
 
-api.add_resource(Authentication, '/auth/')
-api.add_resource(Library, '/library/')
-api.add_resource(Author, '/authors/', '/authors/<int:author_id>')
+api.add_resource(Authentication, '/api/auth/')
+api.add_resource(Library, '/api/library/')
+api.add_resource(Author, '/api/authors/', '/authors/<int:author_id>')
+api.add_resource(BookDetail, '/api/books/', '/books/<int:book_id>')
+
 
 def configapp() :
-	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///devtest3.db'
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 	app.config['SECRET_KEY'] = "my name is philip de keulenaer and this is my secret"
 	database.db.init_app(app)
 	app.app_context().push()
 	database.db.create_all()
-	
 
 if __name__ == '__main__':
-	configapp()
+	configapp()	
 	app.run(host='0.0.0.0',debug=True)

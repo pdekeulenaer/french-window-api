@@ -4,6 +4,7 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 import models
 import database
 import controller
+import api_main
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -128,6 +129,7 @@ def configapp() :
 	login_manager.init_app(app)
 	login_manager.login_view = 'login'
 	
+	api_main.build_api(app)
 
 configapp()
 
