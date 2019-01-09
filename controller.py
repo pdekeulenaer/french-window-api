@@ -1,4 +1,5 @@
 import models, database
+import datetime
 
 class Controller:
 	model = None
@@ -57,10 +58,28 @@ class BookController(Controller):
 		book.publisher = bookdata.setdefault('publisher')
 		book.description = bookdata.setdefault('description')
 		
+		#assuming this is YYYY-MM-DD
+
+		# def reldate(release_date):
+		# 	if release_date is not None:
+				
+		# 		els = map(lambda l: int(l), release_date.split('-'))
+		# 		print els
+		# 		if len(els) == 1:
+		# 			return datetime.datetime(els[0], 1, 1)
+		# 		elif len(els) == 2:
+		# 			return datetime.datetime(els[0], els[1], 1)
+		# 		elif (len(els) >= 3):
+		# 			return datetime.datetime(els[0], els[1], els[2])
+		# 		else:
+		# 			return None
+		# 	return None
+		# book.release_date = reldate(bookdata.setdefault('release_date'))
 		book.release_date = bookdata.setdefault('release_date')
 		book.pagecount = bookdata.setdefault('pagecount')
 		book.bindingtype = bookdata.setdefault('bindingtype')
 		book.genre = bookdata.setdefault('genre')
+
 		return book
 
 

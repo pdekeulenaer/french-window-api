@@ -4,6 +4,7 @@ from flask_httpauth import HTTPBasicAuth
 
 import models
 import database
+import controller
 
 auth = HTTPBasicAuth()
 
@@ -34,14 +35,9 @@ class Library(Resource):
 		if not request.json or 'title' not in request.json:
 			abort(400)
 
-		book = models.Book()
-		book.title = request.json['title']
-		book.parse(request.json)	#parse rest of parameters from the request
-
-		g.user.library.addbook(book)
-
-		database.db.session.add(book)
-		database.db.session.commit()
+		ctrl = controller.UserController(g.user)
+		book = ctrl.add(request.json)
+		ctrl.commit()
 
 		return book.as_dict(), 201
 

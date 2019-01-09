@@ -22,7 +22,7 @@ class Book(db.Model):
 	publisher = Column(String(255), nullable=True)
 
 	# secondary inputs
-	release_date = Column(DateTime, nullable=True)
+	release_date = Column(String, nullable=True)
 	pagecount = Column(Integer, nullable=True)
 	bindingtype = Column(String, nullable=True)
 	genre = Column(String(255), nullable=True)
