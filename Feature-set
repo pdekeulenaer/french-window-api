@@ -49,3 +49,4 @@ Other features - running list
 - Remember me in login
 - Build out "book detail" page
 - Create functional "edit" form
+- Fix image path storing (either use link or find a way to save image on file)
