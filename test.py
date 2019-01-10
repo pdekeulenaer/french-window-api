@@ -44,14 +44,10 @@ badblood = {'author': 'John Carreyrou',
 			}
 
 
-# ctrl = controller.UserController(user)
-# ctrl.add(badblood)
+ctrl = controller.UserController(user)
+ctrl.add(badblood)
+ctrl.commit()
 
-# ctrl.commit()
-
-ctrl = controller.SeriesController()
-
-res = ctrl.search('Wheel of Time')
-print res
-
-ctrl.setdefault('Wheel of Time')
+# ctrl = controller.SeriesController()
+# res = ctrl.search('Wheel of Time')
+# ctrl.setdefault('Wheel of Time')
