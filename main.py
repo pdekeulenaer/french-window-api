@@ -41,8 +41,8 @@ class LibraryViews:
 	@login_required
 	def add_post():
 		ctrl = controller.UserController(current_user)
+		
 		ctrl.add(request.form.to_dict())
-		print reuqest.form.to_dict()
 		ctrl.commit()
 		return redirect(url_for('mybooks'))
 

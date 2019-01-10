@@ -20,8 +20,9 @@ class Controller:
 	def setdefault(self, name):
 		obj = self.search(name)
 		if obj is None:
-			self.add(name)
+			obj = self.add(name)
 			self.commit()
+
 		return obj
 
 class BookController(Controller):
@@ -40,8 +41,6 @@ class BookController(Controller):
 		if bookdata.setdefault('series_name') is not None:
 			ctrl = SeriesController()
 			series = ctrl.setdefault(bookdata['series_name'])
-
-			print series
 
 			book.series = series
 			book.series_nr = bookdata.setdefault('series_nr')
@@ -85,7 +84,6 @@ class BookController(Controller):
 
 	def detect_author(self, authorobj):
 		#check if an author exists
-		print authorobj
 		if authorobj is None:
 			author = models.Author.unknown_author()
 			return author	
@@ -161,7 +159,6 @@ class SeriesController(Controller):
 
 	def add(self, name):
 		obj = models.Series(name=name)
-		print obj
 		self.session.add(obj)
 
 		return obj

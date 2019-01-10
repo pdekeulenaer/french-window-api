@@ -10,7 +10,10 @@
 		var $cancel 	= $('#dialogCancel');
 		var $confirm	= $('#dialogConfirm');
 
-		$table.dataTable();
+		$table.dataTable({
+			"lengthMenu": [10, 25, 50,100],
+			"pageLength":25
+		});
 		
 		$table.
 			on('click', 'a.remove-row', function(e) {
