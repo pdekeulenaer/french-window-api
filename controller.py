@@ -132,8 +132,10 @@ class UserController(Controller):
 		self.library_control.collect(book)
 
 		# Check if book was read
-		has_read = boolean(bookdata.setdefault("has_read",False))
+		has_read = (bookdata.setdefault("has_read",False))
+		print "[Controller UserController.add()]"
 		print has_read
+		print type(has_read)
 
 		if (has_read):
 			self.mark_read(book.id)
