@@ -124,7 +124,7 @@ class User(db.Model, UserMixin):
 		self.password_hash = self.hash(value)
 
 	# authentication token
-	def generate_token(self, expiration=300):
+	def generate_token(self, expiration=3600):
 		s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
 		return s.dumps({'id': self.id})
 
