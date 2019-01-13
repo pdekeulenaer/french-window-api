@@ -106,6 +106,18 @@ class AuthenticationToken(Resource):
 		token = g.user.generate_token()
 		return jsonify({'token':token.decode('ascii')})
 
+
+class Statistics(Resource):
+	@auth.login_required
+	def get(self):
+		control = controller.UserController(g.user)
+		data = {
+			'Books' : control.nbooks(),
+			'Authors' : control.nauthors(),
+			'Series' : control.nseries()
+		}
+		return jsonify(data)
+
 # classic style routing
 # @app.route('/auth/generate_token')
 # @auth.login_required
@@ -123,4 +135,5 @@ def build_api(app):
 	api.add_resource(Library, '/api/library/')
 	api.add_resource(Author, '/api/authors/', '/api/authors/<int:author_id>')
 	api.add_resource(BookDetail, '/api/books/', '/api/books/<int:book_id>')
+	api.add_resource(Statistics, '/api/stats/')
 

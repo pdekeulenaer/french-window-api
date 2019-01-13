@@ -38,10 +38,11 @@ class BookController(Controller):
 		book.author = author
 
 		# check if series is real
-		if bookdata.setdefault('series_name') is not None:
+		series_name = bookdata.setdefault('series_name', "")
+
+		if (series_name is not None and len(series_name) > 0):
 			ctrl = SeriesController()
 			series = ctrl.setdefault(bookdata['series_name'])
-
 			book.series = series
 			book.series_nr = bookdata.setdefault('series_nr')
 
@@ -167,6 +168,15 @@ class UserController(Controller):
 	def reactivate(self, book_id):
 		self.library_control.reactivate(book_id)
 
+	def nbooks(self):
+		return self.library_control.nbooks()
+
+	def nauthors(self):
+		return self.library_control.nauthors()
+
+	def nseries(self):
+		return self.library_control.nseries()
+
 	@staticmethod
 	def get(user_id):
 		return models.User.query.filter_by(id=user_id).first()
@@ -208,4 +218,22 @@ class LibraryController(Controller):
 	def reactivate(self, book_id):
 		assoc = self.getassoc(book_id)
 		assoc.active = True
-		
+
+	def nbooks(self):
+		return len(self.library.books())
+
+	def nauthors(self):
+		books = self.library.books()
+		authors = set(map(lambda l: l.author.id, books))
+		return len(authors)
+
+	def nseries(self):
+		books = self.library.books()
+		series_books = filter(lambda l: l.series is not None, books)
+		print series_books
+
+		l =  map(lambda l: (l.series.id, l.title, l.series.name	), series_books)
+		print l
+		print set(l)
+		print len(set(l))
+		return len(set(map(lambda l: l.series.id, series_books)))
