@@ -2,7 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-# Base = declarative_base()
 # TYPE = config.DB_TYPE
 
 # def generate_engine():
@@ -28,7 +27,3 @@ db = SQLAlchemy()
 # 	dbname = 'pdekeulenaer$askhenry'
 # 	mysql_string = 'mysql+mysqldb://%s:%s@%s/%s' % (username, password, host, dbname)
 # 	return mysql_string	
-
-
-# engine = generate_engine()
-# session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))

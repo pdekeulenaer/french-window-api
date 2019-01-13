@@ -131,6 +131,13 @@ class UserController(Controller):
 		# add book to current library
 		self.library_control.collect(book)
 
+		# Check if book was read
+		has_read = boolean(bookdata.setdefault("has_read",False))
+		print has_read
+
+		if (has_read):
+			self.mark_read(book.id)
+
 		return book
 
 	def mark_read(self, book_id):
