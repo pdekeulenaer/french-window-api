@@ -1,5 +1,5 @@
 import models, database
-import datetime
+import datetime, hashlib, urllib
 
 class Controller:
 	model = None
@@ -79,6 +79,20 @@ class BookController(Controller):
 		book.bindingtype = bookdata.setdefault('bindingtype')
 		book.genre = bookdata.setdefault('genre')
 
+		# Book image 
+		# TODO - refactor this
+		image_path = bookdata.setdefault('image_path')
+		print "[Controller BookController.parse()]"
+		print image_path
+		if image_path is None or image_path == "":
+			book.image_path = None
+		else:
+			# save image locally
+			hasher = hashlib.new('sha256')
+			hasher.update(book.title)
+			fileloc = book.title + "_" + hasher.hexdigest() + ".jpg"
+			urllib.urlretrieve(image_path, 'static/img/'+fileloc)
+			book.image_path = fileloc
 		return book
 
 
