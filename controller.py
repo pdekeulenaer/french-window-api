@@ -91,7 +91,7 @@ class BookController(Controller):
 			hasher = hashlib.new('sha256')
 			hasher.update(book.title)
 			fileloc = book.title + "_" + hasher.hexdigest() + ".jpg"
-			urllib.urlretrieve(image_path, 'static/img/'+fileloc)
+			urllib.urlretrieve(image_path, 'static/img/'+	fileloc)
 			book.image_path = fileloc
 		return book
 
@@ -142,17 +142,11 @@ class UserController(Controller):
 		bookctrl = BookController()
 		book = bookctrl.add(bookdata)
 
-		# add book to current library
-		self.library_control.collect(book)
-
 		# Check if book was read
 		has_read = (bookdata.setdefault("has_read",False))
-		print "[Controller UserController.add()]"
-		print has_read
-		print type(has_read)
 
-		if (has_read):
-			self.mark_read(book.id)
+		# add book to current library
+		self.library_control.collect(book, read=has_read)
 
 		return book
 
@@ -190,9 +184,10 @@ class LibraryController(Controller):
 	def setlib(self, library):
 		self.library = library
 
-	def collect(self, book):
+	def collect(self, book, read=False):
 		if (book not in self.library.books()):
 			assoc = models.AssociationBookLibrary(library=self.library, book=book)
+			assoc.read = int(read)
 
 	def getassoc(self, book_id):
 		assoc = models.AssociationBookLibrary.query.filter_by(book_id=book_id, library_id=self.library.id).first()
