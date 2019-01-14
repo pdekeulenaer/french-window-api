@@ -8,7 +8,7 @@
 
               <div class="col-md-12 col-lg-12 col-xl-12">
                 <section class="panel panel-horizontal">
-                  <header class="panel-heading bg-white" style="width:1px">
+                  <header class="panel-heading bg-white" style="width:1px; vertical-align: top" >
                     <div class="panel-heading mt-sm">
                       <!-- <i class="fa fa-music"></i> -->
                       <img src="{{ url_for('static', filename='img/' + book.image_path) }}"/>
@@ -18,6 +18,18 @@
                     <h3 class="text-semibold mt-sm">{{ book.title }}</h3>
                     <p>{{ book.author.name }}</p>
                     <p>{{ book.description }}</p>
+                    {% if book.series %}
+                    <p>Volume <b>{{book.series_nr}}</b> of the <b>{{book.series.name}}</b> series </p>
+                    {% endif %}
+                    <p>
+                      <hr />
+                      Publisher: {{book.publisher}} <br />
+                      Release date: {{book.release_date}} <br />
+                      ISBN code: {{book.isbn13}} | {{book.isbn10}} <br />
+                      Pagecount: {{book.pagecount}} <br />
+                      Genre: {{book.genre}} <br />  
+                    </p>
+                    
                   </div>
                 </section>
               </div>

@@ -149,6 +149,7 @@ class Library(db.Model):
 	id = Column(Integer, primary_key=True)
 	user_id = Column(Integer, ForeignKey('user.id'))
 	date_created = Column(DateTime, default=datetime.datetime.utcnow)
+	# designation = Column(String(255), default="collection")
 
 	user = relationship('User', back_populates='library')
 	associations = relationship('AssociationBookLibrary', back_populates='library')

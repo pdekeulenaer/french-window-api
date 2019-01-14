@@ -2,6 +2,8 @@ from flask import g, Flask, request, jsonify
 from flask_restful import Resource, Api, reqparse, abort
 from flask_httpauth import HTTPBasicAuth
 
+from fuzzywuzzy import fuzz, process
+
 import models
 import database
 import controller
@@ -41,8 +43,22 @@ class Library(Resource):
 
 		return book.as_dict(), 201
 
+	# Pass it a JSON GET request with 'title' to search for a title
+	# return will be a list of books in authenticated user's collection
+	# If no JSON request or title in request, full collection will be returned
 	@auth.login_required
 	def get(self):
+		if not request.json or 'title' not in request.json:
+			self.collection()
+
+		matchTitle = request.json['title']
+		# Look for similar titles
+		ctrl = controller.UserController(g.user)
+		books = ctrl.collection()
+		matches = filter(lambda l: (fuzz.token_set_ratio(l.title, matchTitle) > 80), books)
+		return map(lambda l: l.as_dict_verbose(), matches)
+
+	def collection(self):
 		return map(lambda l: l.as_dict_verbose(), g.user.library.books())
 
 
@@ -105,7 +121,6 @@ class AuthenticationToken(Resource):
 		print request.json
 		token = g.user.generate_token()
 		return jsonify({'token':token.decode('ascii')})
-
 
 class Statistics(Resource):
 	@auth.login_required
