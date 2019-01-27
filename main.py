@@ -118,8 +118,8 @@ class Authentication:
 def load_user(user_id):
 	return controller.UserController.get(user_id)
 
-def configapp() :
-	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///devtest3.db'
+def configapp(dbname='devtest3.db') :
+	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + dbname
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 	app.config['SECRET_KEY'] = "my name is philip de keulenaer and this is my secret"
 
@@ -132,7 +132,6 @@ def configapp() :
 	
 	api_main.build_api(app)
 
-configapp()
-
 if __name__ == '__main__':
+	configapp()
 	app.run(debug=True)

@@ -1,3 +1,4 @@
 *.pyc
 devtest3.db
 /static/img/*.jpg
+build.py

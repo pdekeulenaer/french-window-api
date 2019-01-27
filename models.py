@@ -59,7 +59,6 @@ class Book(db.Model):
 		self.description = d.get('description')
 		self.publisher = d.get('publisher')
 
-
 	def __str__(self):
 		return self.title
 
