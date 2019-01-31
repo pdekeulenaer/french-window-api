@@ -3,8 +3,8 @@ from flask_restful import Resource, Api, reqparse, abort
 from flask_httpauth import HTTPBasicAuth
 
 from fuzzywuzzy import fuzz, process
-
 from book_api import search
+import json
 
 import models
 import database
@@ -96,6 +96,12 @@ class BookDetail(Resource):
 		return book.as_dict()
 
 
+class Series(Resource):
+	# return the top 50 series that satisfy the keyword
+	def get(self, searchStr=""):
+		series = models.Series.query.filter(models.Series.name.like('%{0}%'.format(searchStr))).limit(50).all()
+		return json.dumps(map(lambda l: l.as_dict(), series))
+
 class Search(Resource):
 	@auth.login_required
 	def get(self, isbn=None):
@@ -171,5 +177,6 @@ def build_api(app):
 	api.add_resource(Author, '/api/authors/', '/api/authors/<int:author_id>')
 	api.add_resource(BookDetail, '/api/books/', '/api/books/<int:book_id>')
 	api.add_resource(Statistics, '/api/stats/')
+	api.add_resource(Series, '/api/series/', '/api/series/<string:searchStr>')
 	api.add_resource(Search, '/api/search/<string:isbn>')
 

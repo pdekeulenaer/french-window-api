@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Table, DateTime, Boolean
+rom sqlalchemy import Column, Integer, String, Text, ForeignKey, Table, DateTime, Boolean
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 
 from flask import current_app as app
