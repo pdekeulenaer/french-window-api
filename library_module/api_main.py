@@ -4,6 +4,8 @@ from flask_httpauth import HTTPBasicAuth
 
 from fuzzywuzzy import fuzz, process
 
+from book_api import search
+
 import models
 import database
 import controller
@@ -94,6 +96,22 @@ class BookDetail(Resource):
 		return book.as_dict()
 
 
+class Search(Resource):
+	@auth.login_required
+	def get(self, isbn=None):
+		if isbn is None:
+			resource_not_found()
+
+		print isbn
+
+		# calls method in book_api classes
+		book = search(isbn)
+		if book is None:
+			return {}
+
+		assert type(book) is dict
+		return book
+
 
 class Author(Resource):
 	def get(self, author_id=None):
@@ -107,6 +125,8 @@ class Author(Resource):
 			resource_not_found()
 		
 		return author.as_dict()
+
+
 
 
 class Authentication(Resource):
@@ -151,4 +171,5 @@ def build_api(app):
 	api.add_resource(Author, '/api/authors/', '/api/authors/<int:author_id>')
 	api.add_resource(BookDetail, '/api/books/', '/api/books/<int:book_id>')
 	api.add_resource(Statistics, '/api/stats/')
+	api.add_resource(Search, '/api/search/<string:isbn>')
 
