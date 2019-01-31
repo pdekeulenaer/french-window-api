@@ -2,4 +2,5 @@ from flask import Flask
 
 from library_module import app
 
-app.run(debug=app.config["DEBUG"])
+if __name__ == '__main__':
+	app.run(debug=app.config["DEBUG"])
