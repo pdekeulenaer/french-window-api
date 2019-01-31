@@ -100,7 +100,7 @@ class Series(Resource):
 	# return the top 50 series that satisfy the keyword
 	def get(self, searchStr=""):
 		series = models.Series.query.filter(models.Series.name.like('%{0}%'.format(searchStr))).limit(50).all()
-		return json.dumps(map(lambda l: l.as_dict(), series))
+		return jsonify(map(lambda l: l.as_dict(), series))
 
 class Search(Resource):
 	@auth.login_required
