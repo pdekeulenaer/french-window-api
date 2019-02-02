@@ -33,13 +33,13 @@ class LibraryThingApi(BookApi):
 		book = {}
 
 		book['title'] = work.title.cdata
-		book['author'] = work.author.cdata
+		book['author'] = {"name" : work.author.cdata}
 		book['isbn'] = isbncode
 
 		book['pagecount'] = None
-		book['cover'] = self.coverUrl.format(self.apiKey, isbncode)
+		book['image_path'] = self.coverUrl.format(self.apiKey, isbncode)
 		book['publisher'] = None
-		book['publishedDate'] = None
+		book['release_date'] = None
 		book['description'] = None
 
 		return book

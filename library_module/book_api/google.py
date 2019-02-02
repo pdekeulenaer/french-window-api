@@ -29,16 +29,16 @@ class GoogleApi(BookApi):
 
 		book['title'] = volume.get('title')
 		book['publisher'] = volume.get('publisher')
-		book['publishedDate'] = volume.get('publishedDate')
+		book['release_date'] = volume.get('publishedDate')
 		book['description'] = volume.get('description')
 
 		book['author'] = None
 		if (volume.get('authors') is not None):
-			book['author'] = volume.get('authors')[0]
+			book['author'] = {"name" : volume.get('authors')[0]}
 		
 		book['pagecount'] = volume.get('pageCount')
-		book['cover'] = volume.get('imageLinks').get('thumbnail')
+		book['image_path'] = volume.get('imageLinks').get('thumbnail')
 
-		book['isbn'] = volume.get('industryIdentifiers')[-1]['identifier']
+		book['isbn13'] = volume.get('industryIdentifiers')[-1]['identifier']
 
 		return book
